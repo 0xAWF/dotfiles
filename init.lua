@@ -2,12 +2,12 @@ vim.g.mapleader = " "
 
 vim.o.number = true
 vim.o.relativenumber = true
-vim.o.wrap = false 
+vim.o.wrap = false
 vim.o.tabstop = 8
 vim.o.signcolumn = "yes"
 vim.o.winborder = "rounded"
 
-local servers = { "clangd", "lua_ls", "tinymist", "pyright" }
+local servers = { "clangd", "lua_ls", "tinymist", "pyright", "ruby_lsp" }
 vim.pack.add({
 	{ src = "https://github.com/folke/tokyonight.nvim" },
 	{ src = "https://github.com/neovim/nvim-lspconfig" },
@@ -19,11 +19,18 @@ vim.pack.add({
 	{ src = "https://github.com/saghen/blink.cmp" },
 	{ src = "https://github.com/saghen/blink.lib" },
 	{ src = "https://github.com/akinsho/toggleterm.nvim" },
+	{ src = "https://github.com/mason-org/mason.nvim" },
 	{ src = "https://github.com/folke/trouble.nvim" }
 })
 
 
 require("trouble").setup()
+require("mason").setup({
+	firewall = {
+		enabled = true
+	}
+})
+
 require("toggleterm").setup({
 	open_mapping = [[<c-t>]],
 	direction = "float"
