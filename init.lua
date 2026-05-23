@@ -2,7 +2,7 @@ vim.g.mapleader = " "
 
 vim.o.number = true
 vim.o.relativenumber = true
-vim.o.wrap = false
+vim.o.wrap = false 
 vim.o.tabstop = 8
 vim.o.signcolumn = "yes"
 vim.o.winborder = "rounded"
@@ -67,3 +67,4 @@ vim.keymap.set("v", "<leader>cc", ":y+<CR>")
 
 vim.keymap.set({ "v", "n" }, "<leader>/", ":norm gcc<CR>")
 vim.keymap.set("n", "<leader>q", ":Trouble diagnostics toggle<CR>")
+vim.keymap.set("n", "<ESC>", ":noh<CR>")
