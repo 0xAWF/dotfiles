@@ -7,7 +7,7 @@ vim.o.tabstop = 8
 vim.o.signcolumn = "yes"
 vim.o.winborder = "rounded"
 
-local servers = { "clangd", "lua_ls", "tinymist", "pyright", "ruby_lsp" }
+local servers = { "clangd", "lua_ls", "tinymist", "pyright", "ruby_lsp", "ts_ls" }
 vim.pack.add({
 	{ src = "https://github.com/folke/tokyonight.nvim" },
 	{ src = "https://github.com/neovim/nvim-lspconfig" },
