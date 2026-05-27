@@ -28,6 +28,10 @@
       "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",
       "src": "https://github.com/nvim-lua/plenary.nvim"
     },
+    "smear-cursor.nvim": {
+      "rev": "9e9378d6ee34bb3782e0e8c63d9ec8ca618b479b",
+      "src": "https://github.com/sphamba/smear-cursor.nvim"
+    },
     "startup.nvim": {
       "rev": "cd5fe95f61fdf6ef7db3732be79126032ab1dd3e",
       "src": "https://github.com/startup-nvim/startup.nvim"
