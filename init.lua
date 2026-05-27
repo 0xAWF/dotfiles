@@ -24,6 +24,7 @@ vim.pack.add({
 })
 
 
+
 require("trouble").setup()
 require("mason").setup({
 	firewall = {
@@ -70,7 +71,7 @@ vim.keymap.set("n", "<leader>ff", require("telescope.builtin").find_files)
 vim.keymap.set("n", "<leader>fb", require("telescope.builtin").buffers)
 vim.keymap.set("n", "<leader>fg", require("telescope.builtin").live_grep)
 vim.keymap.set("n", "<leader>fh", require("telescope.builtin").help_tags)
-vim.keymap.set("v", "<leader>cc", ":y+<CR>")
+vim.keymap.set("v", "<leader>cc", '"+y')
 
 vim.keymap.set({ "v", "n" }, "<leader>/", ":norm gcc<CR>")
 vim.keymap.set("n", "<leader>q", ":Trouble diagnostics toggle<CR>")
