@@ -20,7 +20,6 @@ vim.pack.add({
 	{ src = "https://github.com/akinsho/toggleterm.nvim" },
 	{ src = "https://github.com/mason-org/mason.nvim" },
 	{ src = "https://github.com/folke/trouble.nvim" },
-	{ src = "https://github.com/sphamba/smear-cursor.nvim" },
 	{ src = "https://github.com/oskarnurm/koda.nvim"}
 })
 
@@ -28,7 +27,6 @@ vim.pack.add({
 
 
 
-require("smear_cursor").setup()
 require("trouble").setup()
 require("mason").setup({
 	firewall = {
