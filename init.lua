@@ -9,7 +9,6 @@ vim.o.winborder = "rounded"
 
 local servers = { "clangd", "lua_ls", "tinymist", "pyright", "ruby_lsp", "ts_ls" }
 vim.pack.add({
-	{ src = "https://github.com/folke/tokyonight.nvim" },
 	{ src = "https://github.com/neovim/nvim-lspconfig" },
 	{ src = "https://github.com/nvim-mini/mini.nvim" },
 	{ src = "https://github.com/stevearc/oil.nvim" },
@@ -21,8 +20,10 @@ vim.pack.add({
 	{ src = "https://github.com/akinsho/toggleterm.nvim" },
 	{ src = "https://github.com/mason-org/mason.nvim" },
 	{ src = "https://github.com/folke/trouble.nvim" },
-	{ src = "https://github.com/sphamba/smear-cursor.nvim" }
+	{ src = "https://github.com/sphamba/smear-cursor.nvim" },
+	{ src = "https://github.com/oskarnurm/koda.nvim"}
 })
+
 
 
 
@@ -67,7 +68,7 @@ for _, server in ipairs(servers) do
 	vim.lsp.enable(server)
 end
 
-vim.cmd.colorscheme("tokyonight-night")
+vim.cmd.colorscheme("koda-dark")
 vim.keymap.set("n", "<leader>fm", vim.lsp.buf.format)
 vim.keymap.set("n", "<C-n>", ":Oil<CR>")
 vim.keymap.set("n", "<leader>ff", require("telescope.builtin").find_files)
