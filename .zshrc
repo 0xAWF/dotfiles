@@ -53,6 +53,33 @@ function goRemoteUrl() {
  #    fi
  # }
 
+ ## bash
+ #function goRemoteUrl() {
+#     local url
+#     url=$(git remote get-url origin 2>/dev/null)
+#
+#     if [[ "$url" == git@github.com:* ]]; then
+#         url=${url#git@github.com:}
+#         url=${url%.git}
+#         url="https://github.com/$url"
+#     fi
+#
+#     if [[ "$url" == https://github.com/* ]]; then
+#         url=${url%.git}
+#     fi
+#
+# }
+#
+# function smart_open_widget() {
+#   local target
+#   target=$(find | fzf --layout reverse --border) || return 
+#
+#   [[ -z "$target" ]] && return
+#   cd "$target"  
+# }
+#
+# bind -x '"\C-f":"smart_open_widget"'
+
 
 function smart_open_widget() {
   local target
