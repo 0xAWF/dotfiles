@@ -30,6 +30,7 @@ vim.pack.add({
     { src = "https://github.com/akinsho/toggleterm.nvim" },
     { src = "https://github.com/saghen/blink.cmp" },
     { src = "https://github.com/saghen/blink.lib" },
+    { src = "https://github.com/rafamadriz/friendly-snippets" }, 
     { src = "https://github.com/akinsho/toggleterm.nvim" },
     { src = "https://github.com/mason-org/mason.nvim" },
     { src = "https://github.com/folke/trouble.nvim" },
@@ -69,8 +70,12 @@ require("blink.cmp").setup({
         preset = "enter",
         ["<Tab>"] = { "select_next", "fallback" },
         ["<S-Tab>"] = { "select_prev", "fallback" }
+    },
+    sources = {
+     default = {"lsp", "path", "snippets", "buffer"}
     }
 })
+
 require("telescope").setup()
 require("mini.pairs").setup()
 require("mini.surround").setup({
@@ -126,5 +131,7 @@ vim.keymap.set("x", "<S-Tab>", "<gv")
 
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+
+vim.keymap.set({ "n", "v" }, "<leader>å", ':put +<CR>')
 
 vim.keymap.set("n", "<leader>rl", ":so $MYVIMRC<CR>")

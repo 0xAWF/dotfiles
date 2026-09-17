@@ -1,69 +1,139 @@
 #!/bin/bash
 
-# Track any packages that fail to install
 failed=()
 
-# Keep sudo session alive for the duration of the script
 sudo -v || exit 1
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+while true; do
+    sudo -n true
+    sleep 60
+    kill -0 "$$" 2>/dev/null || exit
+done 2>/dev/null &
 
-# Helper: checks if an APT package is already installed
-is_installed() { dpkg -l "$1" 2>/dev/null | grep -q "^ii"; }
+is_installed() {
+    dpkg-query -W -f='${Status}' "$1" 2>/dev/null |
+        grep -q "install ok installed"
+}
 
-# Helper: installs APT packages one by one, skips if already installed, logs failures
+#apt
 apt_install() {
     for pkg in "$@"; do
         if is_installed "$pkg"; then
             echo "[-] $pkg (already installed, skipping)"
             continue
         fi
+
+        echo "[+] Installing APT package: $pkg"
+
         if ! sudo apt-get -o DPkg::Lock::Timeout=60 install -y "$pkg"; then
-            # Attempt to fix broken dependencies and retry once
             echo "[!] Attempting to fix dependencies for $pkg..."
-            sudo apt-get -o DPkg::Lock::Timeout=60 --fix-broken install -y
-            sudo apt-get -o DPkg::Lock::Timeout=60 install -y "$pkg" || failed+=("$pkg (apt)")
+
+            sudo apt-get \
+                -o DPkg::Lock::Timeout=60 \
+                --fix-broken install -y
+
+            if ! sudo apt-get \
+                -o DPkg::Lock::Timeout=60 \
+                install -y "$pkg"; then
+                failed+=("$pkg (apt)")
+            fi
         fi
     done
 }
 
-# Helper: installs Flatpak packages one by one and logs failures
+
+#flatpak 
 flatpak_install() {
     for pkg in "$@"; do
-        flatpak install -y flathub "$pkg" || failed+=("$pkg (flatpak)")
+        echo "[+] Installing Flatpak: $pkg"
+
+        if ! sudo flatpak install -y flathub "$pkg"; then
+            failed+=("$pkg (flatpak)")
+        fi
     done
 }
 
-# Update package list before installing anything
-sudo apt-get -o DPkg::Lock::Timeout=60 update
+# snap 
+snap_install() {
+    for pkg in "$@"; do
+        if sudo snap list "$pkg" >/dev/null 2>&1; then
+            echo "[-] $pkg (already installed, skipping)"
+            continue
+        fi
 
-# Install APT packages (includes Flatpak and GNOME Software integration)
-apt_install vlc gimp fastfetch htop flatpak gnome-software-plugin-flatpak fzf ripgrep lazygit 
+        echo "[+] Installing Snap: $pkg"
 
-# Add Flathub remote (skips if already added)
-flatpak remote-add --if-not-exists flathub <https://dl.flathub.org/repo/flathub.flatpakrepo>
+        if ! sudo snap install "$pkg"; then
+            failed+=("$pkg (snap)")
+        fi
+    done
+}
 
-# Install Flatpak apps
-flatpak_install com.spotify.Client com.discordapp.Discord obsidian bitwarden signal-desktop figma-linux-next
 
-# Install snapd if not already present (e.g. on minimal Ubuntu installs)
-if ! command -v snap &> /dev/null; then
-    sudo apt-get -o DPkg::Lock::Timeout=60 install -y snapd || failed+=("snapd (apt)")
+if ! sudo apt-get -o DPkg::Lock::Timeout=60 update; then
+    echo "[!] apt update failed"
+    exit 1
 fi
 
-# Install Snap apps
-sudo snap install code --classic || failed+=("code (snap)")
+apt_install \
+    vlc \
+    gimp \
+    fastfetch \
+    htop \
+    flatpak \
+    gnome-software-plugin-flatpak \
+    fzf \
+    ripgrep \
+    lazygit
 
-# Print install summary
+
+sudo flatpak remote-add \
+    --if-not-exists \
+    flathub \
+    https://dl.flathub.org/repo/flathub.flatpakrepo
+
+flatpak_install \
+    com.discordapp.Discord \
+    md.obsidian.Obsidian \
+    org.signal.Signal
+
+# Install snapd if Snap isn't available
+if ! command -v snap >/dev/null 2>&1; then
+    echo "[+] Installing snapd..."
+
+    if ! sudo apt-get \
+        -o DPkg::Lock::Timeout=60 \
+        install -y snapd; then
+        failed+=("snapd (apt)")
+    fi
+fi
+
+if command -v snap >/dev/null 2>&1; then
+    sudo systemctl enable --now snapd.socket 2>/dev/null || true
+
+    # Snap applications
+    snap_install \
+	nvim
+        bitwarden
+
+    # Bitwarden requires this interface for secure storage
+    sudo snap connect bitwarden:password-manager-service 2>/dev/null || true
+else
+    failed+=("snap applications (snap unavailable)")
+fi
+
 echo ""
 echo "===== Install Summary ====="
-if [ ${#failed[@]} -eq 0 ]; then
+
+if [ "${#failed[@]}" -eq 0 ]; then
     echo "All packages installed successfully!"
 else
     echo "The following packages could not be installed:"
+
     for pkg in "${failed[@]}"; do
         echo "  - $pkg"
     done
 fi
 
 echo ""
-echo "Note: A system restart is required for Flatpak apps to appear in your application launcher."
+echo "Installation complete."
+
