@@ -18,7 +18,11 @@ local servers = {
     "basedpyright",
     "ruby_lsp",
     "ts_ls",
+    "html",
+    "eslint",
+    "laravel_lsp",
     "jsonls",
+    "intelephense",
 }
 
 vim.pack.add({
@@ -30,19 +34,36 @@ vim.pack.add({
     { src = "https://github.com/akinsho/toggleterm.nvim" },
     { src = "https://github.com/saghen/blink.cmp" },
     { src = "https://github.com/saghen/blink.lib" },
-    { src = "https://github.com/rafamadriz/friendly-snippets" }, 
+    { src = "https://github.com/rafamadriz/friendly-snippets" },
     { src = "https://github.com/akinsho/toggleterm.nvim" },
     { src = "https://github.com/mason-org/mason.nvim" },
     { src = "https://github.com/folke/trouble.nvim" },
     { src = "https://github.com/stevearc/conform.nvim" },
-    { src = "https://github.com/bluz71/vim-moonfly-colors" }
+    { src = "https://github.com/bluz71/vim-moonfly-colors" },
+    { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
 
 })
 
+require("nvim-treesitter").install({
+    "blade",
+    "php",
+    "php_only",
+    "html",
+    "css",
+    "javascript",
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "blade", "php", "html", "css", "javascript" },
+    callback = function()
+        pcall(vim.treesitter.start)
+    end,
+})
 require("conform").setup({
     formatters_by_ft = { python = { "black" } }
 })
 require("trouble").setup()
+
 require("mason").setup({
     firewall = {
         enabled = true
@@ -72,7 +93,7 @@ require("blink.cmp").setup({
         ["<S-Tab>"] = { "select_prev", "fallback" }
     },
     sources = {
-     default = {"lsp", "path", "snippets", "buffer"}
+        default = { "lsp", "path", "snippets", "buffer" }
     }
 })
 
@@ -93,6 +114,28 @@ require("mini.surround").setup({
 for _, server in ipairs(servers) do
     vim.lsp.enable(server)
 end
+
+vim.lsp.config("laravel_lsp", {
+    cmd = { "laravel-lsp" },
+    filetypes = { "php", "blade" },
+    root_markers = { "artisan", "composer.json", ".git" }
+})
+
+vim.filetype.add({
+    pattern = { [".*%.blade%.php"] = "blade" },
+})
+
+vim.lsp.config("html", {
+    filetypes = { "html", "blade" },
+})
+
+
+require("conform").setup({
+    formatters_by_ft = {
+        python = { "black" },
+        blade = { "blade-formatter" },
+    },
+})
 
 vim.cmd.colorscheme("moonfly")
 
