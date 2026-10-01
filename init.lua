@@ -41,7 +41,7 @@ vim.pack.add({
     { src = "https://github.com/stevearc/conform.nvim" },
     { src = "https://github.com/bluz71/vim-moonfly-colors" },
     { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
-
+    { src = "https://github.com/0xAWF/arrakis.nvim"},
 })
 
 require("nvim-treesitter").install({
@@ -137,8 +137,13 @@ require("conform").setup({
     },
 })
 
-vim.cmd.colorscheme("moonfly")
+require("arrakis").setup({
+    transparent = false,     -- drop backgrounds so the terminal shows through
+    italic_comments = true,  -- italics on comments
+    overrides = {},          -- highlight groups, applied last and always winning
+})
 
+vim.cmd("colorscheme arrakis")
 -- vim.opt.runtimepath:append("~/Developer/personal/plugins/tinytask.nvim")
 -- require("tinytask").setup({ keymap = "<leader>tt" })
 -- require("tinytask").setup()
