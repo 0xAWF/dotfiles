@@ -23,6 +23,8 @@ local servers = {
     "laravel_lsp",
     "jsonls",
     "intelephense",
+    "golangci_lint_ls",
+    "gopls",
 }
 
 vim.pack.add({
@@ -41,7 +43,7 @@ vim.pack.add({
     { src = "https://github.com/stevearc/conform.nvim" },
     { src = "https://github.com/bluz71/vim-moonfly-colors" },
     { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
-    { src = "https://github.com/0xAWF/arrakis.nvim"},
+    { src = "https://github.com/0xAWF/arrakis.nvim" },
 })
 
 require("nvim-treesitter").install({
@@ -138,9 +140,9 @@ require("conform").setup({
 })
 
 require("arrakis").setup({
-    transparent = false,     -- drop backgrounds so the terminal shows through
-    italic_comments = true,  -- italics on comments
-    overrides = {},          -- highlight groups, applied last and always winning
+    transparent = false,    -- drop backgrounds so the terminal shows through
+    italic_comments = true, -- italics on comments
+    overrides = {},         -- highlight groups, applied last and always winning
 })
 
 vim.cmd("colorscheme arrakis")
