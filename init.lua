@@ -25,6 +25,7 @@ local servers = {
     "intelephense",
     "golangci_lint_ls",
     "gopls",
+    "bashls",
 }
 
 vim.pack.add({
@@ -53,6 +54,7 @@ require("nvim-treesitter").install({
     "html",
     "css",
     "javascript",
+    "bash"
 })
 
 vim.api.nvim_create_autocmd("FileType", {
