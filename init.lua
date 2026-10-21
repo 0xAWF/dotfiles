@@ -23,6 +23,8 @@ local servers = {
     "laravel_lsp",
     "jsonls",
     "intelephense",
+    "golangci_lint_ls",
+    "gopls",
     "bashls",
 }
 
