@@ -19,6 +19,7 @@ local servers = {
     "ruby_lsp",
     "ts_ls",
     "jsonls",
+    "rust_analyzer"
 }
 
 vim.pack.add({
@@ -30,12 +31,12 @@ vim.pack.add({
     { src = "https://github.com/akinsho/toggleterm.nvim" },
     { src = "https://github.com/saghen/blink.cmp" },
     { src = "https://github.com/saghen/blink.lib" },
-    { src = "https://github.com/rafamadriz/friendly-snippets" }, 
+    { src = "https://github.com/rafamadriz/friendly-snippets" },
     { src = "https://github.com/akinsho/toggleterm.nvim" },
     { src = "https://github.com/mason-org/mason.nvim" },
     { src = "https://github.com/folke/trouble.nvim" },
     { src = "https://github.com/stevearc/conform.nvim" },
-    { src = "https://github.com/bluz71/vim-moonfly-colors" }
+    { src = "https://github.com/0xAWF/arrakis.nvim" }
 
 })
 
@@ -51,8 +52,18 @@ require("mason").setup({
 
 require("toggleterm").setup({
     open_mapping = [[<c-t>]],
-    direction = "float"
+    direction = "horizontal"
 })
+vim.keymap.set({ "n", "t" }, "<C-+>", "<cmd>resize +2<CR>")
+vim.keymap.set({ "n", "t" }, "<C-->", "<cmd>resize -2<CR>")
+vim.api.nvim_create_autocmd("TermOpen", {
+    pattern = "term://*toggleterm#*",
+    callback = function()
+        vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], { buffer = 0 })
+        vim.keymap.set("t", "<C-w>", [[<C-\><C-n><C-w>]], { buffer = 0 })
+    end,
+})
+
 require("oil").setup({
 
     columns = {
@@ -72,7 +83,7 @@ require("blink.cmp").setup({
         ["<S-Tab>"] = { "select_prev", "fallback" }
     },
     sources = {
-     default = {"lsp", "path", "snippets", "buffer"}
+        default = { "lsp", "path", "snippets", "buffer" }
     }
 })
 
@@ -94,8 +105,13 @@ for _, server in ipairs(servers) do
     vim.lsp.enable(server)
 end
 
-vim.cmd.colorscheme("moonfly")
 
+require("arrakis").setup({
+    transparent = false,
+    italic_comments = true,
+})
+
+vim.cmd("colorscheme arrakis")
 -- vim.opt.runtimepath:append("~/Developer/personal/plugins/tinytask.nvim")
 -- require("tinytask").setup({ keymap = "<leader>tt" })
 -- require("tinytask").setup()
@@ -108,7 +124,24 @@ end
 
 vim.keymap.set("n", "<C-n>", ":Oil<CR>")
 vim.keymap.set("n", "<leader>gi", vim.lsp.buf.definition)
-vim.keymap.set("n", "<leader>ff", require("telescope.builtin").find_files)
+-- <C-h> inside the picker toggles hidden files (keeps the typed prompt)
+local function find_files(hidden, prompt)
+    require("telescope.builtin").find_files({
+        prompt_title = hidden and "Find Files (hidden)" or "Find Files",
+        hidden = hidden,
+        find_command = { "rg", "--files", "--color", "never", "--glob", "!**/.git/*" },
+        default_text = prompt,
+        attach_mappings = function(bufnr, map)
+            map({ "i", "n" }, "<C-h>", function()
+                local line = require("telescope.actions.state").get_current_line()
+                require("telescope.actions").close(bufnr)
+                find_files(not hidden, line)
+            end)
+            return true
+        end,
+    })
+end
+vim.keymap.set("n", "<leader>ff", function() find_files(false) end)
 vim.keymap.set("n", "<leader>fb", require("telescope.builtin").buffers)
 vim.keymap.set("n", "<leader>fg", require("telescope.builtin").live_grep)
 vim.keymap.set("n", "<leader>fh", require("telescope.builtin").help_tags)
