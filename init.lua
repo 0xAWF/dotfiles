@@ -18,8 +18,15 @@ local servers = {
     "basedpyright",
     "ruby_lsp",
     "ts_ls",
+    "html",
+    "eslint",
+    "laravel_lsp",
     "jsonls",
-    "rust_analyzer"
+    "rust_analyzer",
+    "intelephense",
+    "golangci_lint_ls",
+    "gopls",
+    "bashls"
 }
 
 vim.pack.add({
@@ -36,14 +43,31 @@ vim.pack.add({
     { src = "https://github.com/mason-org/mason.nvim" },
     { src = "https://github.com/folke/trouble.nvim" },
     { src = "https://github.com/stevearc/conform.nvim" },
-    { src = "https://github.com/0xAWF/arrakis.nvim" }
-
+    { src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "main" },
+    { src = "https://github.com/0xAWF/arrakis.nvim" },
 })
 
+require("nvim-treesitter").install({
+    "blade",
+    "php",
+    "php_only",
+    "html",
+    "css",
+    "javascript",
+    "bash"
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "blade", "php", "html", "css", "javascript" },
+    callback = function()
+        pcall(vim.treesitter.start)
+    end,
+})
 require("conform").setup({
     formatters_by_ft = { python = { "black" } }
 })
 require("trouble").setup()
+
 require("mason").setup({
     firewall = {
         enabled = true
@@ -52,7 +76,7 @@ require("mason").setup({
 
 require("toggleterm").setup({
     open_mapping = [[<c-t>]],
-    direction = "horizontal"
+    direction = "float"
 })
 vim.keymap.set({ "n", "t" }, "<C-+>", "<cmd>resize +2<CR>")
 vim.keymap.set({ "n", "t" }, "<C-->", "<cmd>resize -2<CR>")
@@ -105,11 +129,33 @@ for _, server in ipairs(servers) do
     vim.lsp.enable(server)
 end
 
-
 require("arrakis").setup({
     transparent = false,
     italic_comments = true,
 })
+
+vim.lsp.config("laravel_lsp", {
+    cmd = { "laravel-lsp" },
+    filetypes = { "php", "blade" },
+    root_markers = { "artisan", "composer.json", ".git" }
+})
+
+vim.filetype.add({
+    pattern = { [".*%.blade%.php"] = "blade" },
+})
+
+vim.lsp.config("html", {
+    filetypes = { "html", "blade" },
+})
+
+
+require("conform").setup({
+    formatters_by_ft = {
+        python = { "black" },
+        blade = { "blade-formatter" },
+    },
+})
+
 
 vim.cmd("colorscheme arrakis")
 -- vim.opt.runtimepath:append("~/Developer/personal/plugins/tinytask.nvim")
